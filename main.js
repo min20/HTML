@@ -1,5 +1,14 @@
 function initPage() {
+	shufflePanel();
 	eventHandler();
+}
+
+function shufflePanel() {
+	var url = "pressData.json";
+
+	var left = document.querySelector("#left");
+	var center = document.querySelector("#center");
+	var right = document.querySelector("#right");
 }
 
 function eventHandler() {
@@ -14,9 +23,9 @@ function selectAction(event) {
 	event.preventDefault();
 
 	var clickEvent = event.target;
-	var flag= new Object();
+	var shifterSet = new Object();
 
-	flag.panel_direction = 0;
+	shifterSet.panelDirection = 0;
 
 	/*
 	 * 2013.11.30 Current Animation List
@@ -24,29 +33,31 @@ function selectAction(event) {
 	 **
 	 */
 	
-	//PBStatus === PanelButton Status
+	//PBStatus means PanelButton Status
 	if(clickEvent.dataset.pbstatus === 'wait') {
 		if(clickEvent.id === 'toLeft') {
-			flag.panel_direction = 1;
+			shifterSet.panelDirection = 1;
 		}
 		else if(clickEvent.id === 'toRight') {
-			flag.panel_direction = -1;
+			shifterSet.panelDirection = -1;
 		}
 		else {
 			console.log('DO NOTHING');
 			return;
 		}
 
-		// event 안 막아도 잘 되길래... 주석처리 합니다.
-		// 짜는데 오래 걸렸는데... ㅠㅠ
-		//changePBStatus();
+		// 기존 html 구조에서는 버그가 좀 있어서 리팩토링 했습니다.
+		// 그 후 event를 막지 않아도 잘 되더군요..... 이에 주석처리 합니다.
+		// 주석 해제시 rolling 중 버튼 클릭 이벤트를 막습니다.
+		// (shiftPanel()의 종료조건 안에도 있음. 그것도 해제합시다)
+		changePBStatus();
 	}
 	else {
 		console.log('DO NOTHING');
 		return;
 	}
 
-	setPanelShifter(flag);
+	setPanelShifter(shifterSet);
 }
 
 function changePBStatus() {
@@ -64,45 +75,46 @@ function changePBStatus() {
 		else {
 			PBList[idx].dataset.pbstatus = 'wait';
 		}
-		console.log(PBList[idx]);
+		//console.log(PBList[idx]);
 	}
 }
 
-function setPanelShifter(flag) {
-	var interval = new Object();
+function setPanelShifter(shifterSet) {
 	var panels = document.querySelector('#panels');
 	var mList = new Array(
-		0, 1, 2, 4, 8, 16, 32, 64, 128, 130,
-		150, 142, 93, 88, 54, 34, 21, 13, 8, 5,
-		3, 2, 1, 1, 0
+			1, 1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 56, 64, 68, 70, 71,
+			70, 68, 64, 58, 50, 40, 32, 26, 21, 17, 14, 12, 10,
+			8, 6, 5, 4, 3, 2, 1, 1, 1, 1
 		);
 
-	interval.setFn = null;
-	interval.count = 0;
+	shifterSet.intervalId = null;
+	shifterSet.intervalCount = 0;
 
 	// Must add MOUSE EVENT STOPPER
 	// setInterval has own time circuit.
-	interval.setFn = setInterval(function() {
-		( shiftPanel ) (flag, interval, panels, mList);	
-	}, 30);
+	shifterSet.intervalId = setInterval(function() {
+		( shiftPanel ) (shifterSet, panels, mList);	
+	}, 15);
 
 }
 
-function shiftPanel(flag, interval, panels, mList) {
-	if(interval.count >= 25) {
-		flag.panel_direction = 0;
-		interval.count = 0;
-		//changePBStatus();
-		clearInterval(interval.setFn);
+function shiftPanel(shifterSet, panels, mList) {
+	if(shifterSet.intervalCount >= mList.length) {
+		shifterSet.panelDirection = 0;
+		shifterSet.intervalCount = 0;
+		changePBStatus();
+		clearInterval(shifterSet.intervalId);
 	}
 
 	var marginLeft = getCSSProperty(panels, 'margin-left');
 
+	//console.log(panels.style.marginLeft);
 	panels.style.marginLeft = parseInt(marginLeft)
-			+ flag.panel_direction * mList[interval.count] + "px";
+			+ shifterSet.panelDirection
+			* mList[shifterSet.intervalCount] + "px";
 
-	//console.log(interval.count);
-	interval.count++;
+	//console.log(shifterSet.intervalCount);
+	shifterSet.intervalCount++;
 }
 
 function getCSSProperty(element, attributeName) {
