@@ -4,7 +4,7 @@ function initPage() {
 
 // 2013.12.09 수업시간에 작성
 function changeTitle() {
-	var url = "pressData.json";
+	var url = "../json/pressData.json";
 	var obj = new Object();
 	obj.newTitle = null;
 	obj.mainTitle = document.querySelector("#header h1");

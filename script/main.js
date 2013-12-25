@@ -1,14 +1,79 @@
+// MUST OPERATE WITH underscore.js
+
 function initPage() {
-	shufflePanel();
+	getPanelData();
 	eventHandler();
 }
 
-function shufflePanel() {
-	var url = "pressData.json";
+/*
+ * 2013.12.15 Current Function List
+ **
+ ** shiftPanel()
+ **** setPanelShifter()
+ **** changePBStatus()
+ **
+ ** getPanelData()
+ **** fillPanel()
+ */	
 
-	var left = document.querySelector("#left");
-	var center = document.querySelector("#center");
-	var right = document.querySelector("#right");
+function getPanelData() {
+	var eleHead = document.getElementsByTagName('head')[0];
+	var eleScript = document.createElement('script');
+
+	var sDate = String( (new Date()).getTime() );
+	var sGetPressData = "getPressData" + sDate;
+	var serverURL = "./server/getPressData.php?callback=" + sGetPressData;
+
+	eleScript.src = serverURL;
+
+	window[sGetPressData] = function(arrayPressData) {
+		fillPanel(arrayPressData);
+	};
+
+	eleHead.appendChild(eleScript);
+}
+
+function fillPanel(arrayPressData) {
+	arrayShuffle(arrayPressData);
+
+	var arrayPanelContents = document.querySelectorAll(".panelContents");
+	var panelContentsTemplate = _.template(
+		"<h3>" +
+			"<a href=\"<%= titleAddr %>\" "+
+				"target=\"_blank\"> " +
+				"<img src=\"<%= titleImg %>\"" +
+				"width=\"260\" height=\"55\" " +
+				"alt=\"<%= title %>\">" +
+			"</a>" +
+		"</h3>" +
+		"<iframe " +
+			"src=\"<%= htmlAddr %>\" " +
+			"width=\"840\" " +
+			"height=\"380\" " +
+			"frameborder=\"0\" " +
+			"scrolling=\"no\" " +
+			"class=\"ifr_arc\" " +
+			"allowtransparency=\"true\" " +
+			"title=\"<%= title %> 주요뉴스\"> " +
+		"</iframe>"
+	);
+
+	for(var idx = 0; idx < arrayPanelContents.length; idx++) {
+		var result = panelContentsTemplate(arrayPressData[idx]);
+		arrayPanelContents[idx].insertAdjacentHTML("beforeend", result);
+	}
+
+}
+
+function arrayShuffle(array) {
+	var randomIdx;
+	var temp;
+	for(idx = 0; idx < array.length; idx++) {
+		randomIdx = idx + Math.floor(Math.random() * (array.length - idx));
+		temp = array[idx];
+		array[idx] = array[randomIdx];
+		array[randomIdx] = temp;
+	}
 }
 
 function eventHandler() {
@@ -27,12 +92,6 @@ function selectAction(event) {
 
 	shifterSet.panelDirection = 0;
 
-	/*
-	 * 2013.11.30 Current Animation List
-	 ** shiftPanel()
-	 **
-	 */
-	
 	//PBStatus means PanelButton Status
 	if(clickEvent.dataset.pbstatus === 'wait') {
 		if(clickEvent.id === 'toLeft') {
