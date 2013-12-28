@@ -4,7 +4,7 @@ html {
 
 body {
 	position: relative;
-	font-family: "NanumGothic", Times, serif;
+	font-family: "Nanum Gothic", "Apple SD Gothic Neo", "돋움", Times;
 	height: 100%;
 }
 
@@ -97,6 +97,46 @@ div#panels {
 	margin-top: -280px;
 }
 
+div.shiftPanelLeft {
+	animation: rollingLeft;
+	animation-duration: 0.6s;
+	animation-timing-function: ease;
+	animation-fill-mode: forwards;
+
+	-webkit-animation: rollingLeft;
+	-webkit-animation-duration: 0.6s;
+	-webkit-animation-timing-function: ease;
+	-webkit-animation-fill-mode: forwards;
+}
+@keyframes rollingLeft {
+	from { transform: translateX(0px); }
+	to { transform: translateX(1000px); }
+}
+@-webkit-keyframes rollingLeft {
+	from { -webkit-transform: translateX(0px); }
+	to { -webkit-transform: translateX(1000px); }
+}
+
+div.shiftPanelRight {
+	animation: rollingRight;
+	animation-duration: 0.6s;
+	animation-timing-function: ease;
+	animation-fill-mode: forwards;
+
+	-webkit-animation: rollingRight;
+	-webkit-animation-duration: 0.6s;
+	-webkit-animation-timing-function: ease;
+	-webkit-animation-fill-mode: forwards;
+}
+@keyframes rollingRight {
+	from { transform: translateX(0px); }
+	to { transform: translateX(-1000px); }
+}
+@-webkit-keyframes rollingRight {
+	from { -webkit-transform: translateX(0px); }
+	to { -webkit-transform: translateX(-1000px); }
+}
+
 div#panels>.panelWrapper {
 	position: absolute;
 	left: 20%;
@@ -112,16 +152,24 @@ div.panelWrapper>.panel {
 	margin: 0 auto;
 }
 
-div#left {
+div#pw0 {
+	margin-left: -2000px;
+}
+
+div#pw1 {
 	margin-left: -1000px;	
 }
 
-div#center {
+div#pw2 {
 	margin-left: 0px;
 }
 
-div#right {
+div#pw3 {
 	margin-left: 1000px;
+}
+
+div#pw4 {
+	margin-left: 2000px;
 }
 
 div.panel>.panelContents {
@@ -134,9 +182,14 @@ div.panel>.panelContents {
 	height: 500px;
 }
 
-div.panel h3 {
+div.panelContents h3 {
 	padding-bottom: 10px;
 	border-bottom: 3px solid #AAAAAA;
+}
+
+.titleAnchor {
+	width: 0px;
+	height: 55px;
 }
 
 div.panel iframe {
