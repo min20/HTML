@@ -12,6 +12,25 @@ div {
 	/* border: 1px solid red; */
 }
 
+a {
+	text-decoration: none;
+}
+
+.button {
+	display: block;
+	background-color: white;
+	color: #FFFFFF;
+	border: 1px solid #0077FF;
+	background-color: #0077FF;
+	padding: 7px 6px;
+	text-decoration: none;
+	font-size: 12px;
+	font-weight: 600;
+
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
 div#wrapper {
 	position: absolute;
 	width: 100%;
@@ -232,47 +251,43 @@ div#footer {
 	position: absolute;
 	bottom: 0px;
 	width: 100%;
-	text-align: center;
 	background-color: #EDEDED;
 }
 
-div#press {
+div#footer>div {
+	position: relative;
+	display: block;
 	height: 90px;
-	width: 100%;
 	text-align: center;
-	text-decoration: none;
 }
 
-div#press>ul {
+div#thumbnails {
 	display: inline-block;
 	margin-top: 6px;
 }
 
-div#press li {
-	display: inline;
+div#thumbnails>div{
+	display: inline-block;
+	margin-right: 3px;
 }
 
-div#press img {
-	border: 1px solid #CCCCCC;
+div#thumbnails a {
+	display: inline-block;
+	float: left;
+	overflow: hidden;
+	border: 1px solid #AAAAAA;
 }
 
-div#press>a {
-	position: absolute;
+div#thumbnails img {
+	margin: -1px;
 }
 
-a {
-	text-decoration: none;
+div#thumbnails .selected>a {
+	border: 3px solid #777777;
 }
-.button {
-	display: block;
-	background-color: white;
-	color: #FFFFFF;
-	border: 1px solid #0077FF;
-	background-color: #0077FF;
-	-webkit-border-radius: 3px;
-	padding: 7px 6px;
-	text-decoration: none;
-	font-size: 12px;
-	font-weight: 600;
+
+div#thumbnails .selected img{
+	margin: -3px;
 }
+
 

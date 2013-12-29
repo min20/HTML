@@ -1,19 +1,7 @@
-// 2013.12.26
-
+// 2013.12.28
 /* MUST OPERATE WITH
- ** underscore.js
- */
 
-/*
- * Current Function List
- **
- ** shiftPanel()
- **** setPanelShifter()
- **** changePBStatus()
- **
- ** getPanelData()
- **** fillPanelContents()
- */	
+ */
 
 function initPage() {
 	getPanelContents();
@@ -30,17 +18,40 @@ function getPanelContents() {
 
 	eleScript.src = serverURL;
 
+	window.front = -2;
+	window.numPanel = 5;
 	window[sGetPressData] = function(arrayPressData) {
-		this.arrayPanelWrapper = document.getElementsByClassName('panelWrapper');
-		this.arrayPressData = arrayPressData;
-		this.front = 0;
-		arrayShuffle(arrayPressData);
-		for(var idx = 0; idx < arrayPanelWrapper.length; idx++) {
-			fillPanelContents(arrayPanelWrapper[idx],
+		window.arrayPressData = arrayPressData;
+		arrayShuffle(window.arrayPressData);
+
+		var panels = document.querySelector('#panels');
+		for(var idx = 0; idx < numPanel; idx++) {
+			var elePanelWrapper = document.createElement('div');
+			elePanelWrapper.className = "panelWrapper";
+			elePanelWrapper.id = "pw" + idx;
+
+			panels.appendChild(elePanelWrapper);
+		}
+
+		var arrayPanelWrapper =	panels.children;
+		for(var idx = 0; idx < numPanel; idx++) {
+			fillPanelContents(arrayPanelWrapper[idx % numPanel],
+					arrayPressData[mod(idx - 2, arrayPressData.length)]
+			);
+		}
+
+		var thumbnails = document.querySelector('#thumbnails');
+		for(var idx = 0; idx < arrayPressData.length; idx++) {
+			var thumb = document.createElement('div');
+			fillPressThumbnail(thumb,
 					arrayPressData[idx % arrayPressData.length]
 			);
-			
+			if(idx === 0) {
+				thumb.className = "selected";
+			}
+			thumbnails.appendChild(thumb);
 		}
+
 	};
 
 	eleHead.appendChild(eleScript);
@@ -48,43 +59,57 @@ function getPanelContents() {
 
 function fillPanelContents(elePanelWrapper, pressData) {
 	var panelTemplate = _.template(
-		"<div class=\"panel\">" +
-			"<div class=\"panelContents\">" +
-				"<h3>" +
-					"<a "+
-						"href=\"<%= titleAddr %>\" "+
-						"target=\"_blank\"> " +
-						"<img src=\"<%= titleImg %>\"" +
-						"width=\"260\" height=\"55\" " +
-						"alt=\"<%= title %>\">" +
-					"</a>" +
-				"</h3>" +
-				"<iframe " +
-					"src=\"<%= htmlAddr %>\" " +
-					"width=\"840\" " +
-					"height=\"380\" " +
-					"frameborder=\"0\" " +
-					"scrolling=\"no\" " +
-					"class=\"ifr_arc\" " +
-					"allowtransparency=\"true\" " +
-					"title=\"<%= title %> 주요뉴스\"> " +
-				"</iframe>" +
-			"</div>" +
-		"</div>"
+			"<div class=\"panel\">" +
+				"<div class=\"panelContents\">" +
+					"<h3>" +
+						"<a " +
+							"href=\"<%= titleAddr %>\" " +
+							"target=\"_blank\"> " +
+								"<img src=\"<%= titleImg %>\"" +
+								"width=\"260\" height=\"55\" " +
+							"alt=\"<%= title %>\">" +
+						"</a>" +
+					"</h3>" +
+					"<iframe " +
+						"src=\"<%= htmlAddr %>\" " +
+						"width=\"840\" " +
+						"height=\"380\" " +
+						"frameborder=\"0\" " +
+						"scrolling=\"no\" " +
+						"class=\"ifr_arc\" " +
+						"allowtransparency=\"true\" " +
+						"title=\"<%= title %> 주요뉴스\"> " +
+					"</iframe>" +
+				"</div>" +
+			"</div>"
 	);
 
 	var result = panelTemplate(pressData);
 	elePanelWrapper.insertAdjacentHTML("beforeend", result);
 }
 
+function fillPressThumbnail(elePressThumbnail, pressData) {
+	var thumbnailTemplate = _.template(
+			"<a " +
+				"href=\"<%= titleAddr %>\" "+
+				"target=\"_blank\">" +
+					"<img src=\"<%= thumbnail  %>\" />" +
+			"</a>"
+	);
+
+	var result = thumbnailTemplate(pressData);
+	elePressThumbnail.insertAdjacentHTML("beforeend", result);
+}
+
 function eventHandler() {
-	document.addEventListener('click',
+	var panelButton = document.querySelector('#panelButton')
+	var panels = document.querySelector('#panels');
+	panelButton.addEventListener('click',
 		function(event) {
-			selectAction(event);
+			selectAction(event, panels);
 		}, false
 	);
 
-	var panels = document.querySelector('#panels');
 	panels.addEventListener('animationend',
 		function(event) {
 			getNextPanelWrapper(panels);
@@ -98,13 +123,14 @@ function eventHandler() {
 }
 
 function getNextPanelWrapper(panels) {
+	var thumbnails = document.querySelector('#thumbnails');
 	var elePanelWrapper = document.createElement('div');
 	elePanelWrapper.className = "panelWrapper";
 	if(panels.className === "shiftPanelLeft") {
 		elePanelWrapper.id = "pw0";
 		panels.removeChild(panels.children[4]);
 
-		for(var idx = 0; idx < 4; idx++) {
+		for(var idx = 0; idx < numPanel - 1; idx++) {
 			panels.children[idx].id = "pw" + (idx + 1);
 		}
 
@@ -118,36 +144,37 @@ function getNextPanelWrapper(panels) {
 		elePanelWrapper.id = "pw4";
 		panels.removeChild(panels.children[0]);
 
-		for(var idx = 0; idx < 4; idx++) {
+		for(var idx = 0; idx < numPanel - 1; idx++) {
 			panels.children[idx].id = "pw" + idx;
 		}
 
-		front = front + 1;
 		fillPanelContents(elePanelWrapper,
-			arrayPressData[mod(front + 5, arrayPressData.length)]
+			arrayPressData[mod(front, arrayPressData.length)]
 		);
 		panels.appendChild(elePanelWrapper);
+		front = front + 1;
 	}
 	panels.className = "";
+
+	thumbnails.querySelector(".selected").className = "";
+	thumbnails.children[mod(front + 2, thumbnails.children.length)].
+			className = "selected";
 }
 
-function selectAction(event) {
+function selectAction(event, panels) {
 	event.preventDefault();
 	var clickEvent = event.target;
 
-	if(clickEvent.parentElement.id === "panelButton") {
-		shiftPanels(clickEvent.id);
+	if(clickEvent.id === "toLeft" || clickEvent.id === "toRight") {
+		shiftPanels(clickEvent.id, panels);
 	}
 	else {
 		console.log('DO NOTHING');
+		return;
 	}
 }
 
-function shiftPanels(buttonId) {
-	var panels = document.getElementById('panels');
-	var elePanelWrapper = document.createElement('div');
-	elePanelWrapper.className = "panelWrapper";
-	
+function shiftPanels(buttonId, panels) {
 	if(buttonId === "toLeft") {
 		panels.className = "shiftPanelLeft";
 	}
