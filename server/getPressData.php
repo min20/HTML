@@ -4,6 +4,22 @@
 	$data =
 '[
 		{
+			"title" : "전자신문",
+			"titleImg" : "./img/pressTitle/nsd114836462.gif",
+			"titleAddr" : "http://www.etnews.com",
+			"htmlAddr" : "http://newsstand.naver.com/include/page/030.html",
+			"thumbnail" : "./img/pressThumbnail/nsd11405830.gif"
+		},
+
+		{
+			"title" : "아이뉴스24",
+			"titleAddr" : "http://www.inews24.com/",
+			"titleImg" : "./img/pressTitle/nsd114738777.gif",
+			"htmlAddr" : "http://newsstand.naver.com/include/page/031.html",
+			"thumbnail" : "./img/pressThumbnail/nsd113110902.gif"
+		},
+
+		{
 			"title" : "지디넷코리아",   
 			"titleImg" : "./img/pressTitle/nsd11491303.gif",
 			"titleAddr" : "http://www.zdnet.co.kr/",
@@ -26,6 +42,7 @@
 			"htmlAddr" : "http://newsstand.naver.com/include/page/293.html",
 			"thumbnail" : "./img/pressThumbnail/nsd16353971.gif"
 		}
+
 ]';
 
 	echo $callbackName."(".$data.")";
