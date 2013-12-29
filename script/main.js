@@ -11,6 +11,7 @@ function initPage() {
 function getPanelContents() {
 	var eleHead = document.getElementsByTagName('head')[0];
 	var eleScript = document.createElement('script');
+	var panelButton = document.querySelector('#panelButton');
 
 	var sDate = String( (new Date()).getTime() );
 	var sGetPressData = "getPressData" + sDate;
@@ -18,20 +19,34 @@ function getPanelContents() {
 
 	eleScript.src = serverURL;
 
-	window.front = -2;
-	window.numPanel = 5;
 	window[sGetPressData] = function(arrayPressData) {
 		window.arrayPressData = arrayPressData;
-		arrayShuffle(window.arrayPressData);
-
 		var panels = document.querySelector('#panels');
-		for(var idx = 0; idx < numPanel; idx++) {
+		if(arrayPressData.length <= 1) {
+			window.front = 0;
+			window.numPanel = 1;
+
 			var elePanelWrapper = document.createElement('div');
 			elePanelWrapper.className = "panelWrapper";
 			elePanelWrapper.id = "pw" + idx;
 
 			panels.appendChild(elePanelWrapper);
 		}
+		else {
+			// front indicates panelWrapper id == pw0
+			window.front = -2;
+			window.numPanel = 5;
+			arrayShuffle(window.arrayPressData);
+
+			for(var idx = 0; idx < numPanel; idx++) {
+				var elePanelWrapper = document.createElement('div');
+				elePanelWrapper.className = "panelWrapper";
+				elePanelWrapper.id = "pw" + idx;
+
+				panels.appendChild(elePanelWrapper);
+			}
+		}
+
 
 		var arrayPanelWrapper =	panels.children;
 		for(var idx = 0; idx < numPanel; idx++) {
@@ -39,6 +54,8 @@ function getPanelContents() {
 					arrayPressData[mod(idx - 2, arrayPressData.length)]
 			);
 		}
+
+		fillPanelButton(panelButton);
 
 		var thumbnails = document.querySelector('#thumbnails');
 		for(var idx = 0; idx < arrayPressData.length; idx++) {
@@ -51,7 +68,6 @@ function getPanelContents() {
 			}
 			thumbnails.appendChild(thumb);
 		}
-
 	};
 
 	eleHead.appendChild(eleScript);
@@ -99,6 +115,22 @@ function fillPressThumbnail(elePressThumbnail, pressData) {
 
 	var result = thumbnailTemplate(pressData);
 	elePressThumbnail.insertAdjacentHTML("beforeend", result);
+}
+
+function fillPanelButton(panelButton) {
+	var buttons = 
+			"<a id=\"toLeft\" href=\"#\">" +
+				"<p>왼쪽 신문</p>" +
+			"</a>" +
+			"<a id=\"toRight\" href=\"#\">" +
+				"<p>오른쪽 신문</p>" +
+			"</a>";
+	if(arrayPressData.length != 1) {
+		panelButton.insertAdjacentHTML("beforeend", buttons);
+	}
+	else {
+		return;
+	}
 }
 
 function eventHandler() {
@@ -149,7 +181,7 @@ function getNextPanelWrapper(panels) {
 		}
 
 		fillPanelContents(elePanelWrapper,
-			arrayPressData[mod(front, arrayPressData.length)]
+			arrayPressData[mod(front + 5, arrayPressData.length)]
 		);
 		panels.appendChild(elePanelWrapper);
 		front = front + 1;
