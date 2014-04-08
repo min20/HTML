@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
 html {
 	height: 100%;
 }
@@ -177,14 +179,17 @@ div#pw0 {
 
 div#pw1 {
 	margin-left: -1000px;	
+	z-index: 30;
 }
 
 div#pw2 {
 	margin-left: 0px;
+	z-index: 50;
 }
 
 div#pw3 {
 	margin-left: 1000px;
+	z-index: 30;
 }
 
 div#pw4 {
@@ -226,7 +231,7 @@ div#panelButton * {
 	margin-top: -40px;
 	width: 40px;
 	height: 60px;
-	z-index: 20;
+	z-index: 100;
 }
 
 div#panelButton p {
@@ -289,5 +294,4 @@ div#thumbnails .selected>a {
 div#thumbnails .selected img{
 	margin: -3px;
 }
-
 
